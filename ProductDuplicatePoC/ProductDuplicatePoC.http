@@ -1,0 +1,6 @@
+@ProductDuplicatePoC_HostAddress = http://localhost:5056
+
+GET {{ProductDuplicatePoC_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
