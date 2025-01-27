@@ -2,7 +2,7 @@ namespace ProductDuplicatePoC.Controllers;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -23,12 +23,25 @@ public class ProductGroupsController : ControllerBase
         _groupService = groupService;
     }
 
-    [HttpGet(Name = "GetProductGroups")]
-    public IEnumerable<Dtos.Group> Get()
+    [HttpPost("fromMongo", Name = "GetProductGroupsMongo")]
+    public async Task<ActionResult<List<Dtos.Group>>> GetFromMongo(
+        [FromQuery] Dtos.GroupFilter filter,
+        CancellationToken cancellationToken)
     {
-        return Enumerable.Range(1, 5).Select(index => new Dtos.Group
-                { })
-            .ToArray();
+        var results = await _groupService.GetFromMongoAsync(filter, cancellationToken);
+
+        return Ok(results);
+    }
+
+    [HttpPost("fromSqlServer", Name = "GetProductGroupsSqlServer")]
+    public async Task<ActionResult<List<Dtos.Group>>> GetFromSqlServer(
+        [FromQuery] Dtos.GroupFilter filter,
+        CancellationToken cancellationToken)
+    {
+        // Change to SQL SERVER
+        var results = await _groupService.GetFromMongoAsync(filter, cancellationToken);
+
+        return Ok(results);
     }
 
     [HttpPost("generate", Name = "GenerateProductGroups")]
