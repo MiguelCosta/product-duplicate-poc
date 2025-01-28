@@ -47,6 +47,10 @@ public static class MapExtenstion
                     BrandId = x.BrandId,
                     Gender = x.Gender,
                     Stock = x.Stock,
+                    SlotStatus = (Models.SlotStatus?)x.SlotStatus,
+                    MerchantCodes = x.MerchantCodes,
+                    Status = (Models.Status)x.Status,
+                    Market = x.Market,
                     DigitalAssets = x.DigitalAssets?
                         .Select(d => new Models.DigitalAsset
                         {

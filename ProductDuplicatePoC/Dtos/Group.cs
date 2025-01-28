@@ -45,7 +45,7 @@ public class Product
 
     public string? Description { get; set; }
 
-    public ItemStatus ItemStatus { get; set; }
+    public Status Status { get; set; }
 
     public decimal? Price { get; set; }
 
@@ -90,6 +90,18 @@ public class Product
     public int? ScoreGBFC { get; set; }
 
     public int? Relevance { get; set; }
+
+    public List<int>? MerchantCodes { get; set; }
+
+    public string Market { get; set; }
+}
+
+public enum Status
+{
+    None = 0,
+    MarkedAsChild = 1,
+    MarkedAsParent = 2,
+    Rejected = 3
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -132,7 +144,8 @@ public enum SlotStatus
     ReadyToSend = 2,
     Allocated = 3,
     InProduction = 4,
-    Dispatched = 5
+    Dispatched = 5,
+    WithoutSlot = 6
 }
 
 public class Category

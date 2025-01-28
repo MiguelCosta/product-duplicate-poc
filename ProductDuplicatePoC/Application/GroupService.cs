@@ -29,7 +29,7 @@ public class GroupService
 
     public async Task GenerateGroupsAsync(int totalGroups)
     {
-        var groupIds = 0;
+        var groupIds = 1;
         var itemIds = 1000000;
         var user1 = new Guid("7F9AD521-2E5C-4FD9-B6D8-1FD4507775A5");
         var user2 = new Guid("EB3B5A8F-C00C-4F65-90A7-AA5B1A392F0A");
@@ -70,8 +70,13 @@ public class GroupService
         {
             new ("1e7eb8bd-5d9f-4030-b547-4b90a06bf47e"),
             new ("957f0e38-0233-4fbf-9852-d28de45fc2d5"),
-            new ("e605d9bb-2236-461c-a817-61564c0a9ad6")
+            new ("e605d9bb-2236-461c-a817-61564c0a9ad6"),
+            new ("92696dad-2d31-44bd-bdab-1865d885d6f1"),
+            new ("2699e640-7497-4a24-a2d4-003fd26cf28d"),
+            new ("2801563f-bb17-4b48-bfc6-8df177c6983e")
         };
+
+        var listOfMarkets = new List<string> { "UK", "US", "FR", "DE", "IT", "ES", "JP", "CN", "PT" };
 
         var faker = new Faker<Dtos.Group>()
             .RuleFor(g => g.Id, f => groupIds++)
@@ -90,13 +95,14 @@ public class GroupService
                 CatalogType = f.PickRandom<Dtos.CatalogType>(),
                 Name = f.Commerce.ProductName(),
                 Description = f.Lorem.Sentence().OrNull(f),
+                Status = f.PickRandom<Dtos.Status>(),
                 Price = decimal.Parse(f.Commerce.Price(10, 10000)),
                 Currency = "EUR",
                 BrandProductId = f.Random.AlphaNumeric(10).OrNull(f),
                 MainColourId = Guid.NewGuid().OrNull(f),
                 MainColourName = f.Commerce.Color().OrNull(f),
-                BrandId = Guid.NewGuid().OrNull(f),
-                BrandName = f.Company.CompanyName().OrNull(f),
+                BrandId = Guid.NewGuid(),
+                BrandName = f.Company.CompanyName(),
                 Gender = f.PickRandom("Male", "Female", "Unisex").ToString(),
                 PlatformCategories = f.Make(3, index =>
                 {
@@ -112,18 +118,21 @@ public class GroupService
                 Measurements = f.Commerce.ProductName().OrNull(f),
                 SizeScaleId = f.PickRandom(sizeScales).OrNull(f),
                 SizeScaleName = f.Commerce.Color().OrNull(f),
-                ProductStatusId = f.PickRandom(productStatusIds).OrNull(f),
+                ProductStatusId = f.PickRandom(productStatusIds),
                 ProductionType = f.PickRandom<Dtos.ProductionType>().OrNull(f),
-                Stock = f.Random.Int(0, 1000).OrNull(f),
+                Stock = f.Random.Int(0, 100).OrNull(f),
                 DigitalAssets = f.Make(2, () => new Dtos.DigitalAsset
                 {
                     Id = f.Random.Int(),
                     Url = f.Image.PicsumUrl(),
                     Order = f.Random.Int(1, 10)
                 }).ToList(),
-                ScrapeDate = f.Date.Past(1).OrNull(f),
-                ScoreGBFC = f.Random.Int(0, 100).OrNull(f),
-                Relevance = f.Random.Int(0, 100).OrNull(f)
+                ScrapeDate = f.Date.Past(1),
+                ScoreGBFC = f.Random.Int(0, 100),
+                Relevance = f.Random.Int(0, 100),
+                MerchantCodes = [f.Random.Int(0, 100)],
+                Market = f.PickRandom(listOfMarkets),
+                SlotStatus = f.PickRandom<Dtos.SlotStatus>(),
             }))
             .FinishWith((f, g) =>
             {

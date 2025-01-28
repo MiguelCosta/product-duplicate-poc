@@ -25,7 +25,7 @@ public class ProductGroupsController : ControllerBase
 
     [HttpPost("fromMongo", Name = "GetProductGroupsMongo")]
     public async Task<ActionResult<List<Dtos.Group>>> GetFromMongo(
-        [FromQuery] Dtos.GroupFilter filter,
+        [FromBody] Dtos.GroupFilter filter,
         CancellationToken cancellationToken)
     {
         var results = await _groupService.GetFromMongoAsync(filter, cancellationToken);

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using ProductDuplicatePoC.Models;
 
@@ -241,6 +243,15 @@ public class GroupRepository
         {
             queryFilter &= Builders<Models.Group>.Filter.AnyIn(x => x.ChildSlotStatus, filter.SlotStatus);
         }
+
+        // Renderizar o filtro como JSON para debug
+        var serializer = BsonSerializer.SerializerRegistry.GetSerializer<Models.Group>();
+        var renderArgs = new RenderArgs<Models.Group>(serializer, BsonSerializer.SerializerRegistry);
+
+        var renderedFilter = queryFilter.Render(renderArgs);
+
+        var queryStr = renderedFilter.ToJson();
+        Console.WriteLine(queryStr);
 
         var options = new FindOptions<Models.Group>
         {
