@@ -81,11 +81,11 @@ public class GroupService
 
         var productStatusIds = new List<Guid>
         {
-            new ("1e7eb8bd-5d9f-4030-b547-4b90a06bf47e"),
-            new ("957f0e38-0233-4fbf-9852-d28de45fc2d5"),
-            new ("e605d9bb-2236-461c-a817-61564c0a9ad6"),
-            new ("92696dad-2d31-44bd-bdab-1865d885d6f1"),
-            new ("2699e640-7497-4a24-a2d4-003fd26cf28d"),
+            new ("1e7eb8bd-5d9f-4030-b547-4b90a06bf47e"), // Created
+            new ("957f0e38-0233-4fbf-9852-d28de45fc2d5"), // Prepare for production
+            new ("e605d9bb-2236-461c-a817-61564c0a9ad6"), // Production
+            new ("92696dad-2d31-44bd-bdab-1865d885d6f1"), // Ready to go online
+            new ("2699e640-7497-4a24-a2d4-003fd26cf28d"), // Online
             new ("2801563f-bb17-4b48-bfc6-8df177c6983e")
         };
 
