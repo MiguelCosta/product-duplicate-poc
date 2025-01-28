@@ -35,11 +35,11 @@ public class ProductGroupsController : ControllerBase
 
     [HttpPost("fromSqlServer", Name = "GetProductGroupsSqlServer")]
     public async Task<ActionResult<List<Dtos.Group>>> GetFromSqlServer(
-        [FromQuery] Dtos.GroupFilter filter,
+        [FromBody] Dtos.GroupFilter filter,
         CancellationToken cancellationToken)
     {
         // Change to SQL SERVER
-        var results = await _groupService.GetFromMongoAsync(filter, cancellationToken);
+        var results = await _groupService.GetFromSQLAsync(filter, cancellationToken);
 
         return Ok(results);
     }

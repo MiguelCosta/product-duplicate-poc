@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using NetTopologySuite.Index.HPRtree;
 using ProductDuplicatePoC.Dtos;
 
 public static class MapExtenstion
@@ -184,4 +185,121 @@ public static class MapExtenstion
         Page = filter.Page ?? 1,
         PageSize = filter.PageSize ?? 180
     };
+
+    public static List<Dtos.Group> ToDto(this List<Models.Sql.DuplicateGroup> groups) => groups.Select(x => x.ToDto()).ToList();
+
+    public static Dtos.Group ToDto(this Models.Sql.DuplicateGroup model) => new Group
+    {
+        Id = model.Id,
+        MatchScore = model.MatchScore,
+        ModifiedDate = model.ModifiedDate,
+        AssigneeUserId = model.AssigneeUserId,
+        MatchType = (Dtos.MatchType)model.MatchType,
+        Note = model.Note,
+        Status = (Dtos.GroupStatus)model.Status,
+        CreatedDate = model.CreatedDate,
+        Type = (Dtos.GroupType)model.Type,
+        Items = model.GroupItems.Select(x => new Dtos.Product
+        {
+            Id = x.ProductId,
+            Catalog = x.Product.Catalog,
+            CatalogType = (Dtos.CatalogType)x.Product.CatalogType,
+            Name = x.Product.Name,
+            Price = x.Product.Price,
+            Description = x.Product.Description,
+            BrandName = x.Product.BrandName,
+            Relevance = x.Product.Relevance,
+            ProductionType = (Dtos.ProductionType?)x.Product.ProductionType,
+            ProductStatusId = x.Product.ProductStatusId,
+            ScrapeDate = x.Product.ScrapeDate,
+            Currency = x.Product.Currency,
+            BrandProductId = x.Product.BrandProductId,
+            MainColourId = x.Product.MainColourId,
+            MainColourName = x.Product.MainColourName,
+            SizeScaleId = x.Product.SizeScaleId,
+            SizeScaleName = x.Product.SizeScaleName,
+            ScoreGBFC = x.Product.ScoreGBFC,
+            BrandId = x.Product.BrandId,
+            Gender = x.Product.Gender,
+            Stock = x.Product.Stock,
+            DigitalAssets = x.Product.DigitalAssets.Select(y => new DigitalAsset
+            {
+                Id = y.Id,
+                Order = y.Order,
+                Url = y.Url
+            }).ToList(),
+            Market = x.Product.Market,
+            MerchantCodes = new List<int> { x.Product.MerchantCode.GetValueOrDefault() },
+            SlotStatus = (SlotStatus?)x.Product.SlotStatus,
+            PlatformCategories = new List<Category> { },
+            Measurements = string.Empty,
+            Compositions = new List<string> { },
+            WebCategories = new List<Category> { },
+            Status = (Status)x.ItemStatus
+        }).ToList()
+    };
+
+    public static Models.Sql.DuplicateGroup ToModelSql(this Dtos.Group group)
+    {
+        return new Models.Sql.DuplicateGroup
+        {
+            Id = group.Id,
+            CreatedDate = group.CreatedDate,
+            AssigneeUserId = group.AssigneeUserId,
+            MatchScore = group.MatchScore,
+            MatchType = (Models.MatchType)group.MatchType,
+            Note = group.Note,
+            ModifiedDate = group.ModifiedDate,
+            Type = (Models.GroupType)group.Type,
+            Status = (Models.GroupStatus)group.Status,
+            GroupItems = group.Items.Select(item => new Models.Sql.DuplicateGroupItem
+            {
+                DuplicateGroupId = group.Id,
+                ItemStatus = (ItemStatus)item.Status,
+                ProductId = item.Id
+            }).ToList()
+        };
+    }
+
+    public static List<Models.Sql.Product> ToModelProductSql(this Dtos.Group group)
+    {
+        return group.Items.Select(item => new Models.Sql.Product
+        {
+            Id = item.Id,
+            BrandId = item.BrandId,
+            BrandName = item.BrandName,
+            BrandProductId = item.BrandProductId,
+            Catalog = item.Catalog,
+            CatalogType = (Models.CatalogType)item.CatalogType,
+            Currency = item.Currency,
+            Description = item.Description,
+            DigitalAssets = item.DigitalAssets?.Select(d => new Models.Sql.DigitalAsset
+            {
+                ProductId = item.Id,
+                Order = d.Order,
+                Url = d.Url,
+            })?.ToList(),
+            Gender = item.Gender,
+            MainColourId = item.MainColourId,
+            MainColourName = item.MainColourName,
+            Market = item.Market,
+            MerchantCode = item.MerchantCodes?.FirstOrDefault() ?? null,
+            PlatformCategoryId = item.PlatformCategories?.FirstOrDefault()?.Id,
+            Name = item.Name,
+            Price = item.Price,
+            ProductionType = (Models.ProductionType?)item.ProductionType,
+            ProductStatusId = item.ProductStatusId,
+            Relevance = item.Relevance,
+            ScoreGBFC = item.ScoreGBFC,
+            ScrapeDate = item.ScrapeDate,
+            SizeScaleId = item.SizeScaleId,
+            SizeScaleName = item.SizeScaleName,
+            SlotStatus = (Models.SlotStatus?)item.SlotStatus,
+            WebCategoryId = item.WebCategories?.FirstOrDefault()?.Id,
+            Stock = item.Stock,
+        }).ToList();
+    }
+
+    public static List<Models.Sql.DuplicateGroup> ToSqlModel(this List<Dtos.Group> groups) => groups.Select(x => x.ToModelSql()).ToList();
+
 }

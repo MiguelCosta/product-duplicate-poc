@@ -1,0 +1,7 @@
+POST http://localhost:5056/ProductGroups/fromSqlServer
+Content-Type: application/json
+@C:\Users\sergio.simoes\Projects\POCS\deduplication\product-duplicate-poc\vegeta\queries\1-GetAll.json
+
+POST http://localhost:5056/ProductGroups/fromSqlServer
+Content-Type: application/json
+@C:\Users\sergio.simoes\Projects\POCS\deduplication\product-duplicate-poc\vegeta\queries\2-GetByFarfetchGroups.json

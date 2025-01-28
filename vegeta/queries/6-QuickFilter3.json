@@ -1,0 +1,13 @@
+{
+  "page": 1,
+  "pageSize": 30,
+  "catalogType": "Farfetch",
+  "status": [ "Created", "Matched" ],
+  "productionTypes": [ "Regular" ],
+  "productStatus": [
+    "e605d9bb-2236-461c-a817-61564c0a9ad6",
+    "92696dad-2d31-44bd-bdab-1865d885d6f1",
+    "2699e640-7497-4a24-a2d4-003fd26cf28d"
+  ],
+  "sort": "CreatedDateAsc"
+}
