@@ -49,6 +49,33 @@ public class GroupRepository
         }
     }
 
+    public async Task UpdateAsync(List<(string ItemId, string NewDescription)> updates, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var operations = new List<WriteModel<Group>>();
+
+            foreach (var item in updates)
+            {
+                var filter = Builders<Models.Group>.Filter.ElemMatch<Models.Product>(
+                    x => x.Items,
+                    Builders<Models.Product>.Filter.Eq(p => p.Id, item.ItemId));
+
+                var updateDefinition = Builders<Models.Group>.Update.Set("Items.$.Description", item.NewDescription);
+
+                var update = new UpdateManyModel<Group>(filter, updateDefinition);
+
+                operations.Add(update);
+            }
+
+            await _collection.BulkWriteAsync(operations, null, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
     public async Task<List<Models.Group>> GetAllAsync(
         Models.GroupFilter filter,
         CancellationToken cancellationToken)

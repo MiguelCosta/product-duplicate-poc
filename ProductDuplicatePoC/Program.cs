@@ -30,6 +30,7 @@ public class Program
 
         builder.Services.AddScoped<GroupService>();
         builder.Services.AddScoped<GroupRepository>();
+        builder.Services.AddScoped<ProductService>();
 
         builder.Services.AddScoped<DuplicateGroupRepository>();
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
