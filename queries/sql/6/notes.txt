@@ -1,0 +1,1 @@
+Query planner diz que falta um indice para Products.ProductionType

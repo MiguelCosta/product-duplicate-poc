@@ -2,20 +2,24 @@ namespace ProductDuplicatePoC.Application;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
 using ProductDuplicatePoC.Data;
+using ProductDuplicatePoC.Data.Sql;
 using ProductDuplicatePoC.Dtos;
 
 public class GroupService
 {
     private readonly GroupRepository _groupRepository;
+    private readonly DuplicateGroupRepository _duplicateGroupRepository;
 
-    public GroupService(Data.GroupRepository groupRepository)
+    public GroupService(Data.GroupRepository groupRepository, DuplicateGroupRepository duplicateGroupRepository)
     {
         _groupRepository = groupRepository;
+        _duplicateGroupRepository = duplicateGroupRepository;
     }
 
     public async Task<List<Dtos.Group>> GetFromMongoAsync(Dtos.GroupFilter filter, CancellationToken cancellationToken)
@@ -23,6 +27,15 @@ public class GroupService
         var modelFilter = filter.ToModel();
 
         var groups = await _groupRepository.GetAllAsync(modelFilter, cancellationToken);
+
+        return groups.ToDto();
+    }
+
+    public async Task<List<Dtos.Group>> GetFromSQLAsync(Dtos.GroupFilter filter, CancellationToken cancellationToken)
+    {
+        var modelFilter = filter.ToModel();
+
+        var groups = await _duplicateGroupRepository.SearchAsync(modelFilter, cancellationToken);
 
         return groups.ToDto();
     }
@@ -130,7 +143,7 @@ public class GroupService
                 ScrapeDate = f.Date.Past(1),
                 ScoreGBFC = f.Random.Int(0, 100),
                 Relevance = f.Random.Int(0, 100),
-                MerchantCodes = [f.Random.Int(0, 100)],
+                MerchantCodes = [f.Random.Int(1, 100)],
                 Market = f.PickRandom(listOfMarkets),
                 SlotStatus = f.PickRandom<Dtos.SlotStatus>(),
             }))
@@ -155,6 +168,46 @@ public class GroupService
 
         var groupsModels = groups.ToModel();
 
-        await _groupRepository.InsertManyAsync(groupsModels);
+        //  await _groupRepository.InsertManyAsync(groupsModels);
+
+        await this.InsertSQLAsync(groups);
+    }
+
+    private async Task InsertSQLAsync(List<Group> groups)
+    {
+        var sqlMerchants = groups
+           .SelectMany(x => x.Items.Where(x => x.MerchantCodes.FirstOrDefault() > 0).SelectMany(y => y.MerchantCodes.Select(z => new Models.Sql.Merchant
+           {
+               Code = z,
+               Name = $"Test {z}"
+           })))
+           .GroupBy(m => m.Code)  
+           .Select(g => g.First())
+           .ToList();
+        
+        await this._duplicateGroupRepository.InsertManyAsync(sqlMerchants);
+        sqlMerchants.Clear();
+
+        for (int i = 0; i < groups.Count; i += 10000)
+        {
+            var batch = groups.Skip(i).Take(10000).ToList();
+
+            var products = batch.SelectMany(x => x.ToModelProductSql()).ToList();
+            await this._duplicateGroupRepository.InsertProductsAsync(products);
+
+            var digitalAssets = products.SelectMany(x => x.DigitalAssets).ToList();
+            await this._duplicateGroupRepository.InsertDigitalAssetsAsync(digitalAssets);
+        }
+
+        for (int i = 0; i < groups.Count; i += 10000)
+        {
+            var batch = groups.Skip(i).Take(10000).ToList();
+
+            var sqlGroups = batch.ToSqlModel();
+            await this._duplicateGroupRepository.InsertManyAsync(sqlGroups);
+
+            var groupItems = sqlGroups.SelectMany(x => x.GroupItems).ToList();
+            await this._duplicateGroupRepository.InsertManyGroupItemsAsync(groupItems);
+        }
     }
 }

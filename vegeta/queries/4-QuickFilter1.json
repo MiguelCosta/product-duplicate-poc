@@ -1,0 +1,16 @@
+{
+    "page": 1,
+    "pageSize": 30,
+    "catalogType": "Farfetch",
+    "status": [
+        "Created",
+        "Matched"
+    ],
+    "productionTypes": [
+        "VPI"
+    ],
+    "slotStatus": [
+        "Allocated"
+    ],
+    "sort": "CreatedDateAsc"
+}

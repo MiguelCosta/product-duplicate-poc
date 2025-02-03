@@ -1,0 +1,3 @@
+POST http://localhost:5056/ProductGroups/fromSqlServer
+Content-Type: application/json
+@C:\Users\sergio.simoes\Projects\POCS\deduplication\product-duplicate-poc\vegeta\queries\8-SearchByAssignedTo.json

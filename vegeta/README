@@ -1,0 +1,4 @@
+## Quick Filter 1 - VPI in Production
+### ./vegeta.exe attack -targets=C:\Users\sergio.simoes\Projects\POCS\deduplication\product-duplicate-poc\vegeta\targets.txt -rate=1 -duration=5s | ./vegeta report
+
+## Get By Farfetch groups & sort by RelevanceDesc
